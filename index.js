@@ -6,6 +6,7 @@ var {
 	GraphQLString,
   GraphQLNonNull,
   GraphQLSchema,
+  GraphQLList,
   printSchema
 } = require('graphql');
 
@@ -75,16 +76,16 @@ const customerType = new GraphQLObjectType({
 const queryType = new GraphQLObjectType({
 	name: 'Query',
 	fields: () => ({
-		customer: {
-			type: customerType,
+		customers: {
+			type: new GraphQLList(customerType),
 			args: {
 				id: {
-					type: new GraphQLNonNull(GraphQLString)
+					type: GraphQLString
 				}
 			},
 			resolve: (root, {
 				id
-			}) => getCustomer(id)
+			}) => id ? [getCustomer(id)] : getCustomers()
 		}
 	})
 });
