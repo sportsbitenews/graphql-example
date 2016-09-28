@@ -1,10 +1,11 @@
 {
   "name": "graphql-example",
   "version": "1.0.0",
-  "description": "",
+  "description": "I don't know",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "gulp && node public/all.js",
+    "test": "mocha --require babel-register test/*.spec.js"
   },
   "author": "Rocky Warren",
   "license": "MIT",
@@ -16,7 +17,9 @@
   "devDependencies": {
     "babel": "^6.5.2",
     "babel-preset-es2015": "^6.14.0",
+    "babel-register": "^6.14.0",
     "chai": "^3.5.0",
+    "chai-as-promised": "^6.0.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-concat": "^2.6.0",

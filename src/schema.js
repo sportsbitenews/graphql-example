@@ -5,8 +5,7 @@ import {
   GraphQLID,
 	GraphQLNonNull,
 	GraphQLSchema,
-	GraphQLList,
-	printSchema
+	GraphQLList
 } from 'graphql';
 import {
   getCustomer,
@@ -72,7 +71,13 @@ const customerType = new GraphQLObjectType({
 		},
 		status: {
 			type: customerStatusEnum
-		}
+		},
+    ssn: {
+      type: GraphQLString,
+      resolve: () => {
+        throw new Error('ssn is private.');
+      }
+    }
 	})
 });
 

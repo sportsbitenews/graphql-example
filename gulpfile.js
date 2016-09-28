@@ -1,17 +1,3 @@
-// var gulp = require("gulp");
-// var babel = require("gulp-babel");
-// var concat = require("gulp-concat");
-
-// gulp.task("default", function () {
-//   return gulp.src("src/**/*.js")
-//     .pipe(sourcemaps.init())
-//     .pipe(babel())
-//     .pipe(concat("all.js"))
-//     .pipe(sourcemaps.write("."))
-//     .pipe(gulp.dest("dist"));
-// });
-
-
 var babel = require('gulp-babel');
 var concat = require('gulp-concat');
 var gulp = require('gulp');
@@ -28,5 +14,5 @@ gulp.task('default', function () {
     .pipe(babel())
     .pipe(concat('all.js'))
     .pipe(sourcemaps.write("."))
-    .pipe(gulp.dest('dist'));
+    .pipe(gulp.dest('public'));
 });
