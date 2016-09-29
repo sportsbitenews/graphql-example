@@ -8,6 +8,7 @@ import {
 	GraphQLList
 } from 'graphql';
 import {
+  getAccount,
   getCustomer,
   getCustomers
 } from "./data.js";
@@ -53,6 +54,30 @@ const customerStatusEnum = new GraphQLEnumType({
 	}
 });
 
+const accountType = new GraphQLObjectType({
+	name: 'Account',
+	description: 'An account.',
+	fields: () => ({
+		id: {
+			type: new GraphQLNonNull(GraphQLID)
+		},
+		name: {
+			type: GraphQLString
+    },
+		customers: {
+			type: new GraphQLList(customerType),
+			args: {
+				id: {
+					type: GraphQLID
+				}
+			},
+			resolve: (root, {
+				id
+			}) => id ? [getCustomer(id)] : getCustomers()
+		}
+	})
+});
+
 const customerType = new GraphQLObjectType({
 	name: 'Customer',
 	description: 'A customer.',
@@ -83,22 +108,16 @@ const customerType = new GraphQLObjectType({
 
 const queryType = new GraphQLObjectType({
 	name: 'Query',
+	description: 'GraphQL API root.',
 	fields: () => ({
-		customers: {
-			type: new GraphQLList(customerType),
-			args: {
-				id: {
-					type: GraphQLID
-				}
-			},
-			resolve: (root, {
-				id
-			}) => id ? [getCustomer(id)] : getCustomers()
+		account: {
+			type: accountType,
+			resolve: (root) => getAccount()
 		}
 	})
 });
 
 export const schema = new GraphQLSchema({
 	query: queryType,
-	types: [customerType]
+	types: [accountType]
 });

@@ -14,110 +14,136 @@ import {
 } from 'graphql';
 
 var lloyd = {
-  customers: [{
-    "id": "857aa3c6-b6fa-4410-9598-b0b9ca543c68",
-    "firstName": "Lloyd",
-    "lastName": "Christmas",
-    "type": "PERSONAL",
-    "status": "DOCUMENT"
-  }]
+  data: {
+    account: {
+      id: '045687e4-7fbb-43b8-8a5f-a91153257e6d',
+      name: 'Samsonite',
+      customers: [{
+        id: '857aa3c6-b6fa-4410-9598-b0b9ca543c68',
+        firstName: 'Lloyd',
+        lastName: 'Christmas',
+        type: 'PERSONAL',
+        status: 'DOCUMENT'
+      }]
+    }
+  }
 };
 
 var customers = {
-  customers: [{
-    "id": "857aa3c6-b6fa-4410-9598-b0b9ca543c68",
-    "firstName": "Lloyd",
-    "lastName": "Christmas",
-    "type": "PERSONAL",
-    "status": "DOCUMENT"
-  }, {
-    "id": "ddfcbb12-3ae6-44b5-a885-a03014776d15",
-    "firstName": "Harry",
-    "lastName": "Dunne",
-    "type": "RECEIVE_ONLY",
-    "status": "UNVERIFIED"
-  }]
+  data: {
+    account: {
+      id: '045687e4-7fbb-43b8-8a5f-a91153257e6d',
+      name: 'Samsonite',
+      customers: [{
+        id: '857aa3c6-b6fa-4410-9598-b0b9ca543c68',
+        firstName: 'Lloyd',
+        lastName: 'Christmas',
+        type: 'PERSONAL',
+        status: 'DOCUMENT'
+      }, {
+        id: 'ddfcbb12-3ae6-44b5-a885-a03014776d15',
+        firstName: 'Harry',
+        lastName: 'Dunne',
+        type: 'RECEIVE_ONLY',
+        status: 'UNVERIFIED'
+      }]
+    }
+  }
 };
 
 var genericQuery = `
-  query Customer($id: ID) {
-    customers(id: $id) {
+  query Account($customerId: ID) {
+    account {
       id
-      firstName
-      lastName
-      type
-      status
+      name
+      customers(id: $customerId) {
+        id
+        firstName
+        lastName
+        type
+        status
+      }
     }
   }`;
 
 describe('Queries', () => {
   it('return list of customers', () => {
-    expect(graphql(schema, `
-        query {
-          customers {
+    return expect(graphql(schema, `
+        {
+          account {
             id
-            firstName
-            lastName
-            type
-            status
+            name
+            customers {
+              id
+              firstName
+              lastName
+              type
+              status
+            }
           }
-        }`)).to.eventually.deep.equal({
-      data: customers
-    });
+        }`)).to.eventually.deep.equal(customers);
   });
 
   it('return customer by id', () => {
-    expect(graphql(schema, `
-        query {
-          customers(id: "857aa3c6-b6fa-4410-9598-b0b9ca543c68") {
+    return expect(graphql(schema, `
+        {
+          account {
             id
-            firstName
-            lastName
-            type
-            status
+            name
+            customers(id: "857aa3c6-b6fa-4410-9598-b0b9ca543c68") {
+              id
+              firstName
+              lastName
+              type
+              status
+            }
           }
-        }`)).to.eventually.deep.equal({
-      data: lloyd
-    });
+        }`)).to.eventually.deep.equal(lloyd);
   });
 
   it('return customer by id with generic query', () => {
     const params = {
-      id: "857aa3c6-b6fa-4410-9598-b0b9ca543c68"
+      customerId: "857aa3c6-b6fa-4410-9598-b0b9ca543c68"
     };
-    expect(graphql(schema, genericQuery, null, null, params)).to.eventually.deep.equal({
-      data: lloyd
-    });
+    return expect(graphql(schema, genericQuery, null, null, params)).to.eventually.deep.equal(lloyd);
   });
 
   it('return customers with null in generic query', () => {
     const params = {
-      id: null
+      customerId: null
     };
-    expect(graphql(schema, genericQuery, null, null, params)).to.eventually.deep.equal({
-      data: customers
-    });
+    return expect(graphql(schema, genericQuery, null, null, params)).to.eventually.deep.equal(customers);
   });
 
   it('report errors', () => {
-    var result = graphql(schema, `
-        query {
-          customers(id: "857aa3c6-b6fa-4410-9598-b0b9ca543c68") {
-            ssn
+    return graphql(schema, `
+        {
+          account {
+            customers(id: "857aa3c6-b6fa-4410-9598-b0b9ca543c68") {
+              ssn
+            }
           }
         }`).then((result) => {
       expect(result).to.deep.equal({
-        "data": {
-          "customers": [{
-            "ssn": null
-          }]
+        data: {
+          account: {
+            customers: [{
+              ssn: null
+            }]
+          }
         },
-        "errors": [{
-          "message": "ssn is private.",
-          "locations": [{
-            "line": 3,
-            "column": 5
-          }]
+        errors: [{
+          message: 'ssn is private.',
+          locations: [{
+            column: 15,
+            line: 5
+          }],
+          path: [
+            "account",
+            "customers",
+            0,
+            "ssn"
+          ]
         }]
       });
     });
